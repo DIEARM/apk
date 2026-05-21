@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Zoho TPV Manager</string>
+    <string name="dashboard_title">Panel de Control TPV</string>
+    <string name="accessibility_service_description">Servicio de accesibilidad necesario para control remoto, captura de pantalla e inyección de eventos táctiles en sesiones de soporte TPV.</string>
+
+    <!-- Estados -->
+    <string name="status_connected">Conectado</string>
+    <string name="status_disconnected">Desconectado</string>
+    <string name="status_installing">Instalando…</string>
+    <string name="status_updating">Actualizando…</string>
+    <string name="status_error">Error</string>
+    <string name="status_ok">OK</string>
+
+    <!-- Acciones -->
+    <string name="btn_install_zoho">Instalar Zoho Assist</string>
+    <string name="btn_check_updates">Verificar Actualizaciones</string>
+    <string name="btn_enable_accessibility">Activar Accesibilidad</string>
+    <string name="btn_enable_device_admin">Activar Device Admin</string>
+    <string name="btn_health_check">Diagnóstico</string>
+    <string name="btn_reboot">Reiniciar Dispositivo</string>
+
+    <!-- Info -->
+    <string name="label_device_model">Modelo</string>
+    <string name="label_android_version">Android</string>
+    <string name="label_zoho_version">Zoho Assist</string>
+    <string name="label_connection">Conexión</string>
+    <string name="label_battery">Batería</string>
+    <string name="label_storage">Almacenamiento</string>
+    <string name="label_uptime">Tiempo activo</string>
+</resources>

@@ -1,0 +1,122 @@
+{
+  "_meta": {
+    "version": "1.0.0",
+    "generated": "2026-05-21",
+    "description": "Configuracion centralizada Zoho Assist para despliegue TPV empresarial",
+    "schema_version": 2
+  },
+
+  "organization": {
+    "name": "NOMBRE_EMPRESA",
+    "id": "ORG-ID-000000",
+    "deployment_unit": "DEPARTAMENTO_TIENDA",
+    "contact_email": "soporte@empresa.com",
+    "contact_phone": "+XX-XXX-XXX-XXXX"
+  },
+
+  "zoho_assist": {
+    "api_base_url": "https://assist.zoho.com/api/v2",
+    "auth_domain": "https://accounts.zoho.com",
+    "unattended_access_key": "UA-KEY-PLACEHOLDER",
+    "department_id": "DEP-XXXXXXXXXXXXX",
+    "session_timeout_minutes": 480,
+    "auto_reconnect": true,
+    "reconnect_interval_seconds": 15,
+    "max_reconnect_attempts": 20
+  },
+
+  "update_repository": {
+    "base_url": "https://repo-empresarial.example.com/zoho",
+    "channel": "stable",
+    "check_interval_hours": 6,
+    "allow_downgrade": false,
+    "verify_checksum": true,
+    "checksum_algorithm": "md5",
+    "rollback_enabled": true,
+    "rollback_keep_versions": 2
+  },
+
+  "device_settings": {
+    "device_type": "tpv",
+    "kiosk_mode": false,
+    "stay_awake": true,
+    "wifi_lock": true,
+    "battery_optimization_disabled": true,
+    "auto_brightness_disabled": true,
+    "screen_timeout_seconds": 0,
+    "keep_service_alive": true,
+    "heartbeat_interval_seconds": 60
+  },
+
+  "remote_control": {
+    "screen_sharing_enabled": true,
+    "screen_sharing_quality": "adaptive",
+    "screen_sharing_max_fps": 15,
+    "file_transfer_enabled": true,
+    "file_transfer_max_size_mb": 100,
+    "clipboard_sync": true,
+    "remote_reboot_allowed": true,
+    "remote_shell_allowed": false,
+    "input_blocking_during_session": false,
+    "show_cursor_pointer": true,
+    "blank_remote_screen": false,
+    "disable_remote_sound": false
+  },
+
+  "security": {
+    "require_device_auth": true,
+    "session_recording_enabled": true,
+    "session_recording_retention_days": 90,
+    "encryption": "aes-256-gcm",
+    "allowed_ip_ranges": [],
+    "two_factor_required": true,
+    "certificate_pinning": true,
+    "trusted_certificates_sha256": [
+      "PLACEHOLDER_SHA256_HASH_1",
+      "PLACEHOLDER_SHA256_HASH_2"
+    ]
+  },
+
+  "notifications": {
+    "connection_alert": true,
+    "session_start_alert": true,
+    "session_end_summary": true,
+    "update_available_alert": true,
+    "error_alert": true,
+    "alert_channel": "push",
+    "alert_endpoint": "https://alerts.empresa.com/webhook/tpv"
+  },
+
+  "logging": {
+    "level": "INFO",
+    "remote_logging": true,
+    "remote_endpoint": "https://logs.empresa.com/ingest/tpv",
+    "max_local_log_size_mb": 50,
+    "rotation_count": 5,
+    "include_device_info": true,
+    "anonymize_pii": true
+  },
+
+  "performance": {
+    "max_memory_usage_mb": 128,
+    "max_cpu_percent": 30,
+    "background_service_priority": "foreground",
+    "compress_screen_data": true,
+    "screen_compression_quality": 70,
+    "adaptive_bitrate": true,
+    "min_bitrate_kbps": 100,
+    "max_bitrate_kbps": 2000
+  },
+
+  "device_management": {
+    "mdm_endpoint": "https://mdm.empresa.com/api/v1/devices",
+    "enrollment_token": "MDM-TOKEN-PLACEHOLDER",
+    "reporting_interval_minutes": 15,
+    "health_check_enabled": true,
+    "health_check_endpoint": "https://mdm.empresa.com/api/v1/health",
+    "remote_wipe_enabled": true,
+    "geolocation_tracking": false,
+    "metrics_collection": true,
+    "metrics_endpoint": "https://metrics.empresa.com/ingest"
+  }
+}

@@ -1,0 +1,28 @@
+# Android
+*.apk
+*.ap_
+*.dex
+*.class
+bin/
+gen/
+build/
+.gradle/
+local.properties
+*.iml
+.idea/
+*.keystore
+!debug.keystore
+
+# OS
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# SDK
+android.jar
+android-*/
+
+# Temp
+*.tmp
+*.log

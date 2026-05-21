@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#FFF5F5F5"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Zoho TPV Manager v1.0"
+        android:textSize="22sp"
+        android:textColor="#212121"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tv_device_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="14sp"
+        android:textColor="#757575"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="16dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="#FFFFFF"
+        android:padding="16dp"
+        android:elevation="2dp"
+        android:layout_marginBottom="8dp">
+
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="ESTADO DEL DISPOSITIVO" android:textStyle="bold" android:textSize="14sp" />
+
+        <TextView android:id="@+id/tv_model" android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:textSize="14sp"
+            android:layout_marginTop="8dp" android:text="Modelo: --" />
+
+        <TextView android:id="@+id/tv_android" android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:textSize="14sp"
+            android:layout_marginTop="4dp" android:text="Android: --" />
+
+        <TextView android:id="@+id/tv_zoho_version" android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:textSize="14sp"
+            android:layout_marginTop="4dp" android:text="Zoho Assist: --" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="#FFFFFF"
+        android:padding="16dp"
+        android:elevation="2dp"
+        android:layout_marginBottom="8dp">
+
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="SERVICIOS" android:textStyle="bold" android:textSize="14sp" />
+
+        <TextView android:id="@+id/tv_accessibility_status"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:textSize="14sp" android:layout_marginTop="8dp" android:text="Accesibilidad: --" />
+
+        <TextView android:id="@+id/tv_device_admin_status"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:textSize="14sp" android:layout_marginTop="4dp" android:text="Device Admin: --" />
+
+        <TextView android:id="@+id/tv_service_status"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:textSize="14sp" android:layout_marginTop="4dp" android:text="Servicio: --" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btn_install"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Instalar Zoho Assist"
+        android:textSize="16sp"
+        android:layout_marginTop="8dp" />
+
+    <Button
+        android:id="@+id/btn_check_updates"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Verificar Actualizaciones"
+        android:textSize="14sp"
+        android:layout_marginTop="4dp"
+        style="?android:attr/borderlessButtonStyle" />
+
+    <Button
+        android:id="@+id/btn_health_check"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Diagnostico"
+        android:textSize="14sp"
+        android:layout_marginTop="4dp"
+        style="?android:attr/borderlessButtonStyle" />
+
+    <Button
+        android:id="@+id/btn_reboot"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Reiniciar Dispositivo"
+        android:textSize="14sp"
+        android:layout_marginTop="4dp"
+        android:textColor="#EA4335"
+        style="?android:attr/borderlessButtonStyle" />
+
+</LinearLayout>
