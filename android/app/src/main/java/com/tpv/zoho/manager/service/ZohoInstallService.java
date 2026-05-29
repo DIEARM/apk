@@ -19,6 +19,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import org.json.JSONObject;
 
 /**
  * Servicio de instalación desatendida de Zoho Assist.
@@ -31,6 +32,7 @@ public class ZohoInstallService extends IntentService {
     private static final String EXTRA_APK_PATH = "apk_path";
     private static final String EXTRA_APK_URL = "apk_url";
     private static final String APK_FILENAME = "zoho_assist.apk";
+    private static final String CONFIG_FILENAME = "zoho_tpv_config.json";
     private static final String DEFAULT_URL =
         "https://repo-empresarial.example.com/zoho/stable/zoho_assist.apk";
 
@@ -50,7 +52,12 @@ public class ZohoInstallService extends IntentService {
 
         String apkPath = intent.getStringExtra(EXTRA_APK_PATH);
         String apkUrl = intent.getStringExtra(EXTRA_APK_URL);
-        if (apkUrl == null) apkUrl = DEFAULT_URL;
+        if (apkUrl == null || apkUrl.trim().length() == 0) {
+            apkUrl = getConfiguredApkUrl();
+        }
+        if (apkUrl == null || apkUrl.trim().length() == 0) {
+            apkUrl = DEFAULT_URL;
+        }
 
         File apkFile = locateOrDownload(apkPath, apkUrl);
         if (apkFile == null) {
@@ -113,6 +120,43 @@ public class ZohoInstallService extends IntentService {
             toast("Error descargando: " + e.getMessage());
             return null;
         }
+    }
+
+    private String getConfiguredApkUrl() {
+        File config = new File(Environment.getExternalStorageDirectory(), CONFIG_FILENAME);
+        if (!config.exists()) {
+            config = new File(Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_DOWNLOADS), CONFIG_FILENAME);
+        }
+        if (!config.exists()) return null;
+
+        try (FileInputStream in = new FileInputStream(config)) {
+            byte[] data = new byte[(int) config.length()];
+            int read = in.read(data);
+            if (read <= 0) return null;
+
+            JSONObject root = new JSONObject(new String(data, 0, read, "UTF-8"));
+            JSONObject zoho = root.optJSONObject("zoho_assist");
+            if (zoho != null) {
+                String directUrl = zoho.optString("apk_download_url", "");
+                if (directUrl.trim().length() > 0) return directUrl.trim();
+            }
+
+            JSONObject repo = root.optJSONObject("update_repository");
+            if (repo != null) {
+                String baseUrl = repo.optString("base_url", "");
+                String channel = repo.optString("channel", "stable");
+                if (baseUrl.trim().length() > 0) {
+                    if (baseUrl.endsWith("/")) {
+                        baseUrl = baseUrl.substring(0, baseUrl.length() - 1);
+                    }
+                    return baseUrl + "/" + channel + "/zoho_assist.apk";
+                }
+            }
+        } catch (Exception e) {
+            toast("Config invalida, usando URL por defecto");
+        }
+        return null;
     }
 
     // ── Instalación silenciosa (Device Owner) ─────────────────────────
