@@ -28,7 +28,7 @@
         <item name="android:elevation">4dp</item>
     </style>
 
-    <style name="ButtonOutline" parent="android:Widget.Button.Borderless">
+    <style name="ButtonOutline" parent="android:Widget.Material.Button.Borderless">
         <item name="android:background">@drawable/btn_outline_bg</item>
         <item name="android:textColor">@color/primary</item>
         <item name="android:textSize">14sp</item>

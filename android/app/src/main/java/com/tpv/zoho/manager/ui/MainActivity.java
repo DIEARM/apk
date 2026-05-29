@@ -1,39 +1,46 @@
 package com.tpv.zoho.manager.ui;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
+import android.app.admin.DevicePolicyManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
-import android.os.Looper;
 import android.os.StatFs;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.app.admin.DevicePolicyManager;
 
+import com.tpv.zoho.manager.model.UpdateManifest;
+import com.tpv.zoho.manager.service.UpdateChecker;
 import com.tpv.zoho.manager.service.ZohoInstallService;
+
 import java.io.File;
 
 public class MainActivity extends Activity {
-
-    // ── Views ──
-    private TextView tvDeviceModel, chipStatus;
-    private TextView tvZohoStatus, tvZohoVersionCard;
+    private TextView tvDeviceModel;
+    private TextView chipStatus;
+    private TextView tvZohoStatus;
+    private TextView tvZohoVersionCard;
     private ImageView ivZohoStatus;
-    private TextView tvAccessStatus, tvAdminStatus, tvServiceStatus;
-    private ImageView ivAccess, ivAdmin, ivService;
-    private TextView tvAndroidVersion, tvBattery, tvStorage;
-    private Button btnInstall, btnUpdate, btnDashboard, btnHealth, btnReboot;
-
-
+    private TextView tvAccessStatus;
+    private TextView tvAdminStatus;
+    private TextView tvServiceStatus;
+    private ImageView ivAccess;
+    private ImageView ivAdmin;
+    private ImageView ivService;
+    private TextView tvAndroidVersion;
+    private TextView tvBattery;
+    private TextView tvStorage;
+    private Button btnInstall;
+    private Button btnUpdate;
+    private Button btnDashboard;
+    private Button btnHealth;
+    private Button btnReboot;
 
     @Override
     protected void onCreate(Bundle b) {
@@ -72,22 +79,22 @@ public class MainActivity extends Activity {
 
     private void loadDeviceInfo() {
         tvDeviceModel.setText(Build.MANUFACTURER + " " + Build.MODEL);
-        tvAndroidVersion.setText("Android: " + Build.VERSION.RELEASE +
-            " (SDK " + Build.VERSION.SDK_INT + ")");
+        tvAndroidVersion.setText("Android: " + Build.VERSION.RELEASE
+            + " (SDK " + Build.VERSION.SDK_INT + ")");
 
-        // Bateria (Intent)
-        Intent batIntent = registerReceiver(null,
-            new android.content.IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+        Intent batIntent = registerReceiver(
+            null,
+            new android.content.IntentFilter(Intent.ACTION_BATTERY_CHANGED)
+        );
         if (batIntent != null) {
             int level = batIntent.getIntExtra(android.os.BatteryManager.EXTRA_LEVEL, -1);
             int scale = batIntent.getIntExtra(android.os.BatteryManager.EXTRA_SCALE, 100);
-            int pct = (int)(level * 100f / scale);
-            tvBattery.setText("Batería: " + pct + "%");
+            int pct = (int) (level * 100f / scale);
+            tvBattery.setText("Bateria: " + pct + "%");
         } else {
-            tvBattery.setText("Batería: --");
+            tvBattery.setText("Bateria: --");
         }
 
-        // Almacenamiento
         try {
             StatFs stat = new StatFs(Environment.getDataDirectory().getPath());
             long free = stat.getAvailableBlocksLong() * stat.getBlockSizeLong();
@@ -96,18 +103,17 @@ public class MainActivity extends Activity {
             tvStorage.setText("Almacenamiento: --");
         }
 
-        // Network status
         ConnectivityManager cm = (ConnectivityManager)
             getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo ni = cm != null ? cm.getActiveNetworkInfo() : null;
         boolean online = ni != null && ni.isConnected();
 
         if (online) {
-            chipStatus.setText("●  EN LÍNEA");
+            chipStatus.setText("ONLINE");
             chipStatus.setBackgroundResource(getResId("chip_online"));
             chipStatus.setTextColor(getColorRes("chip_online_text"));
         } else {
-            chipStatus.setText("●  SIN RED");
+            chipStatus.setText("SIN RED");
             chipStatus.setBackgroundResource(getResId("chip_offline"));
             chipStatus.setTextColor(getColorRes("chip_offline_text"));
         }
@@ -129,38 +135,31 @@ public class MainActivity extends Activity {
         }
     }
 
-
     private void checkServices() {
-        // Accessibility — simulated, real check requires AccessibilityManager
         ivAccess.setImageResource(getResId("dot_red"));
-        tvAccessStatus.setText("Accesibilidad: Desactivado — Abrir Ajustes");
+        tvAccessStatus.setText("Accesibilidad: pendiente de activar");
 
-        // Device Admin — simulated
         ivAdmin.setImageResource(getResId("dot_red"));
-        tvAdminStatus.setText("Device Admin: Desactivado — Abrir Seguridad");
+        tvAdminStatus.setText("Device Admin: pendiente de activar");
 
-        // Service OK
         ivService.setImageResource(getResId("dot_green"));
-        tvServiceStatus.setText("Servicio: Activo");
+        tvServiceStatus.setText("Servicio: activo");
     }
 
     private void setupListeners() {
         btnInstall.setOnClickListener(v -> {
+            ZohoInstallService.start(this);
             if (isDeviceOwner()) {
-                ZohoInstallService.start(this);
-                Toast.makeText(this, "⬇ Instalación desatendida iniciada...",
+                Toast.makeText(this, "Instalacion desatendida iniciada",
                     Toast.LENGTH_SHORT).show();
             } else {
-                ZohoInstallService.start(this);
                 Toast.makeText(this,
-                    "⚠️ Modo manual — toque Aceptar en el instalador",
+                    "Modo manual: confirme el instalador en pantalla",
                     Toast.LENGTH_LONG).show();
             }
         });
 
-        btnUpdate.setOnClickListener(v ->
-            Toast.makeText(this, "🔄 Consultando repositorio...",
-                Toast.LENGTH_SHORT).show());
+        btnUpdate.setOnClickListener(v -> checkForUpdates());
 
         btnDashboard.setOnClickListener(v -> {
             try {
@@ -172,26 +171,70 @@ public class MainActivity extends Activity {
         });
 
         btnHealth.setOnClickListener(v -> {
-            tvServiceStatus.setText("Servicio: Diagnóstico completado ✓");
+            tvServiceStatus.setText("Servicio: diagnostico completado");
             ivService.setImageResource(getResId("dot_green"));
-            Toast.makeText(this, "✅ WiFi OK · Storage OK · CPU Normal",
+            Toast.makeText(this, "WiFi OK, storage OK, CPU normal",
                 Toast.LENGTH_SHORT).show();
         });
 
         btnReboot.setOnClickListener(v ->
-            Toast.makeText(this, "⏻ Reinicio requiere permisos de administrador",
+            Toast.makeText(this, "Reinicio requiere Device Owner",
                 Toast.LENGTH_LONG).show());
     }
 
+    private void checkForUpdates() {
+        btnUpdate.setEnabled(false);
+        Toast.makeText(this, "Consultando repositorio...", Toast.LENGTH_SHORT).show();
 
+        UpdateChecker.checkAndDownload(this, new UpdateChecker.Callback() {
+            @Override
+            public void onStatus(String message) {
+                runOnUiThread(() -> tvServiceStatus.setText("Update: " + message));
+            }
+
+            @Override
+            public void onUpdateReady(File apkFile, UpdateManifest manifest) {
+                runOnUiThread(() -> {
+                    btnUpdate.setEnabled(true);
+                    tvServiceStatus.setText("Update: Zoho Assist " + manifest.version + " listo");
+                    Toast.makeText(
+                        MainActivity.this,
+                        "Actualizacion descargada. Iniciando instalacion...",
+                        Toast.LENGTH_LONG
+                    ).show();
+                    ZohoInstallService.start(MainActivity.this, apkFile, null);
+                });
+            }
+
+            @Override
+            public void onNoUpdate(String message) {
+                runOnUiThread(() -> {
+                    btnUpdate.setEnabled(true);
+                    tvServiceStatus.setText("Update: " + message);
+                    Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
+                });
+            }
+
+            @Override
+            public void onError(String message) {
+                runOnUiThread(() -> {
+                    btnUpdate.setEnabled(true);
+                    tvServiceStatus.setText("Update: error");
+                    Toast.makeText(
+                        MainActivity.this,
+                        "Error actualizando: " + message,
+                        Toast.LENGTH_LONG
+                    ).show();
+                });
+            }
+        });
+    }
 
     private boolean isDeviceOwner() {
         DevicePolicyManager dpm = (DevicePolicyManager)
             getSystemService(Context.DEVICE_POLICY_SERVICE);
         return dpm != null && dpm.isDeviceOwnerApp(getPackageName());
     }
-
-    // ── Helpers ────────────────────────────────────────────────────────
 
     private int getResId(String name) {
         return getResources().getIdentifier(name, "id", getPackageName());
