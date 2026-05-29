@@ -6,6 +6,7 @@ public class UpdateManifest {
     public final String version;
     public final int versionCode;
     public final String apkUrl;
+    public final String xapkUrl;
     public final String md5;
     public final int minSdk;
     public final long fileSize;
@@ -15,6 +16,7 @@ public class UpdateManifest {
         String version,
         int versionCode,
         String apkUrl,
+        String xapkUrl,
         String md5,
         int minSdk,
         long fileSize,
@@ -23,6 +25,7 @@ public class UpdateManifest {
         this.version = version;
         this.versionCode = versionCode;
         this.apkUrl = apkUrl;
+        this.xapkUrl = xapkUrl;
         this.md5 = md5;
         this.minSdk = minSdk;
         this.fileSize = fileSize;
@@ -35,6 +38,7 @@ public class UpdateManifest {
             obj.optString("version", "0.0.0"),
             obj.optInt("version_code", 0),
             obj.optString("apk_url", ""),
+            obj.optString("xapk_url", ""),
             obj.optString("md5", ""),
             obj.optInt("min_sdk", 24),
             obj.optLong("file_size", 0),
@@ -43,6 +47,13 @@ public class UpdateManifest {
     }
 
     public boolean hasDownload() {
-        return apkUrl != null && apkUrl.trim().length() > 0;
+        return getPackageUrl().trim().length() > 0;
+    }
+
+    public String getPackageUrl() {
+        if (xapkUrl != null && xapkUrl.trim().length() > 0) {
+            return xapkUrl;
+        }
+        return apkUrl != null ? apkUrl : "";
     }
 }

@@ -61,9 +61,9 @@ public class UpdateChecker {
                     return;
                 }
 
-                String apkUrl = absoluteUrl(baseUrl, manifest.apkUrl);
+                String apkUrl = absoluteUrl(baseUrl, manifest.getPackageUrl());
                 callback.onStatus("Descargando Zoho Assist " + manifest.version);
-                File apkFile = downloadApk(apkUrl);
+                File apkFile = downloadPackage(apkUrl);
 
                 if (manifest.md5 != null && manifest.md5.trim().length() > 0) {
                     String actualMd5 = md5(apkFile);
@@ -100,14 +100,15 @@ public class UpdateChecker {
         }
     }
 
-    private static File downloadApk(String urlStr) throws Exception {
+    private static File downloadPackage(String urlStr) throws Exception {
         HttpURLConnection connection = (HttpURLConnection) new URL(urlStr).openConnection();
         connection.setConnectTimeout(15000);
         connection.setReadTimeout(120000);
 
+        String fileName = urlStr.endsWith(".xapk") ? "zoho_assist.xapk" : "zoho_assist.apk";
         File out = new File(
             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
-            "zoho_assist.apk"
+            fileName
         );
 
         try (InputStream in = connection.getInputStream();
@@ -164,7 +165,10 @@ public class UpdateChecker {
         if (apkUrl.startsWith("http://") || apkUrl.startsWith("https://")) {
             return apkUrl;
         }
-        URL base = new URL(normalizeBase(baseUrl) + "/");
-        return new URL(base, apkUrl.startsWith("/") ? apkUrl.substring(1) : apkUrl).toString();
+        URL base = new URL(normalizeBase(baseUrl));
+        if (apkUrl.startsWith("/")) {
+            return base.getProtocol() + "://" + base.getAuthority() + apkUrl;
+        }
+        return new URL(new URL(normalizeBase(baseUrl) + "/"), apkUrl).toString();
     }
 }
