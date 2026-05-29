@@ -17,7 +17,8 @@
   "zoho_assist": {
     "api_base_url": "https://assist.zoho.com/api/v2",
     "auth_domain": "https://accounts.zoho.com",
-    "apk_download_url": "https://repo-empresarial.example.com/zoho/stable/zoho_assist.apk",
+    "apk_download_url": "",
+    "official_play_store_url": "https://play.google.com/store/apps/details?id=com.zoho.assist.agent",
     "unattended_access_key": "UA-KEY-PLACEHOLDER",
     "department_id": "DEP-XXXXXXXXXXXXX",
     "session_timeout_minutes": 480,

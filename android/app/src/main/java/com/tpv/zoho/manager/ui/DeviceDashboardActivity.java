@@ -120,7 +120,7 @@ public class DeviceDashboardActivity extends Activity {
         // Zoho Assist
         try {
             android.content.pm.PackageInfo pi = getPackageManager()
-                .getPackageInfo("com.zoho.assist", 0);
+                .getPackageInfo("com.zoho.assist.agent", 0);
             tvZoho.setText("Zoho Assist: v" + pi.versionName + " ✅");
         } catch (Exception e) {
             tvZoho.setText("Zoho Assist: No instalado ❌");

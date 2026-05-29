@@ -33,8 +33,10 @@ public class ZohoInstallService extends IntentService {
     private static final String EXTRA_APK_URL = "apk_url";
     private static final String APK_FILENAME = "zoho_assist.apk";
     private static final String CONFIG_FILENAME = "zoho_tpv_config.json";
+    private static final String PLAY_STORE_URL =
+        "https://play.google.com/store/apps/details?id=com.zoho.assist.agent";
     private static final String DEFAULT_URL =
-        "https://repo-empresarial.example.com/zoho/stable/zoho_assist.apk";
+        "";
 
     private Handler mainHandler;
 
@@ -61,7 +63,8 @@ public class ZohoInstallService extends IntentService {
 
         File apkFile = locateOrDownload(apkPath, apkUrl);
         if (apkFile == null) {
-            toast("No se pudo obtener el APK de Zoho Assist");
+            toast("No hay APK directo configurado. Abriendo descarga oficial.");
+            openOfficialDownload();
             return;
         }
 
@@ -82,6 +85,9 @@ public class ZohoInstallService extends IntentService {
         }
         File local = findInDownloads();
         if (local != null) return local;
+        if (apkUrl == null || apkUrl.trim().length() == 0 || !apkUrl.endsWith(".apk")) {
+            return null;
+        }
 
         toast("Descargando Zoho Assist...");
         return download(apkUrl);
@@ -212,6 +218,16 @@ public class ZohoInstallService extends IntentService {
 
         } catch (Exception e) {
             toast("Error abriendo instalador: " + e.getMessage());
+        }
+    }
+
+    private void openOfficialDownload() {
+        try {
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(PLAY_STORE_URL));
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+        } catch (Exception e) {
+            toast("No se pudo abrir Google Play: " + e.getMessage());
         }
     }
 

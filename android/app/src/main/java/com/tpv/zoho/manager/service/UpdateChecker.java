@@ -23,7 +23,7 @@ public class UpdateChecker {
         void onError(String message);
     }
 
-    private static final String PACKAGE_ZOHO_ASSIST = "com.zoho.assist";
+    private static final String PACKAGE_ZOHO_ASSIST = "com.zoho.assist.agent";
     private static final String DEFAULT_BASE_URL =
         "https://repo-empresarial.example.com/zoho";
     private static final String DEFAULT_CHANNEL = "stable";

@@ -122,7 +122,7 @@ public class MainActivity extends Activity {
     private void checkZohoInstalled() {
         try {
             android.content.pm.PackageInfo pi = getPackageManager()
-                .getPackageInfo("com.zoho.assist", 0);
+                .getPackageInfo("com.zoho.assist.agent", 0);
             tvZohoStatus.setText("Instalado correctamente");
             tvZohoVersionCard.setText("v" + pi.versionName);
             ivZohoStatus.setImageResource(getResId("dot_green"));
