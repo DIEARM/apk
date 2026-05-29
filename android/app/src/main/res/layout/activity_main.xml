@@ -3,111 +3,251 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#FFF5F5F5"
-    android:padding="16dp">
+    android:background="@color/background">
 
-    <TextView
-        android:id="@+id/tv_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Zoho TPV Manager v1.0"
-        android:textSize="22sp"
-        android:textColor="#212121"
-        android:textStyle="bold" />
-
-    <TextView
-        android:id="@+id/tv_device_info"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="14sp"
-        android:textColor="#757575"
-        android:layout_marginTop="4dp"
-        android:layout_marginBottom="16dp" />
-
+    <!-- ═══ HEADER GRADIENTE ═══ -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:background="#FFFFFF"
-        android:padding="16dp"
-        android:elevation="2dp"
-        android:layout_marginBottom="8dp">
+        android:background="@drawable/gradient_header"
+        android:padding="24dp"
+        android:elevation="6dp">
 
-        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:text="ESTADO DEL DISPOSITIVO" android:textStyle="bold" android:textSize="14sp" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
-        <TextView android:id="@+id/tv_model" android:layout_width="wrap_content"
-            android:layout_height="wrap_content" android:textSize="14sp"
-            android:layout_marginTop="8dp" android:text="Modelo: --" />
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
 
-        <TextView android:id="@+id/tv_android" android:layout_width="wrap_content"
-            android:layout_height="wrap_content" android:textSize="14sp"
-            android:layout_marginTop="4dp" android:text="Android: --" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Zoho TPV Manager"
+                    android:textColor="@color/text_on_primary"
+                    android:textSize="22sp"
+                    android:textStyle="bold" />
 
-        <TextView android:id="@+id/tv_zoho_version" android:layout_width="wrap_content"
-            android:layout_height="wrap_content" android:textSize="14sp"
-            android:layout_marginTop="4dp" android:text="Zoho Assist: --" />
+                <TextView
+                    android:id="@+id/tv_device_model"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="--"
+                    android:textColor="#CCFFFFFF"
+                    android:textSize="13sp"
+                    android:layout_marginTop="4dp" />
+
+            </LinearLayout>
+
+            <!-- Status Chip -->
+            <TextView
+                android:id="@+id/chip_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="● EN LÍNEA"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:textColor="@color/chip_online_text"
+                android:background="@drawable/chip_online"
+                android:gravity="center" />
+        </LinearLayout>
     </LinearLayout>
 
-    <LinearLayout
+    <!-- ═══ CONTENIDO SCROLL ═══ -->
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:background="#FFFFFF"
+        android:layout_height="match_parent"
         android:padding="16dp"
-        android:elevation="2dp"
-        android:layout_marginBottom="8dp">
+        android:clipToPadding="false">
 
-        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:text="SERVICIOS" android:textStyle="bold" android:textSize="14sp" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-        <TextView android:id="@+id/tv_accessibility_status"
-            android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:textSize="14sp" android:layout_marginTop="8dp" android:text="Accesibilidad: --" />
+            <!-- ═══ CARD: ESTADO ZOHO ═══ -->
+            <LinearLayout
+                style="@style/CardContainer"
+                android:orientation="vertical">
 
-        <TextView android:id="@+id/tv_device_admin_status"
-            android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:textSize="14sp" android:layout_marginTop="4dp" android:text="Device Admin: --" />
+                <TextView style="@style/SectionTitle"
+                    android:text="ESTADO ZOHO ASSIST" />
 
-        <TextView android:id="@+id/tv_service_status"
-            android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:textSize="14sp" android:layout_marginTop="4dp" android:text="Servicio: --" />
-    </LinearLayout>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/divider"
+                    android:layout_marginBottom="8dp" />
 
-    <Button
-        android:id="@+id/btn_install"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Instalar Zoho Assist"
-        android:textSize="16sp"
-        android:layout_marginTop="8dp" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
 
-    <Button
-        android:id="@+id/btn_check_updates"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Verificar Actualizaciones"
-        android:textSize="14sp"
-        android:layout_marginTop="4dp"
-        style="?android:attr/borderlessButtonStyle" />
+                    <ImageView
+                        android:id="@+id/iv_zoho_status"
+                        android:layout_width="14dp"
+                        android:layout_height="14dp"
+                        android:src="@drawable/dot_red"
+                        android:layout_marginEnd="8dp" />
 
-    <Button
-        android:id="@+id/btn_health_check"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Diagnostico"
-        android:textSize="14sp"
-        android:layout_marginTop="4dp"
-        style="?android:attr/borderlessButtonStyle" />
+                    <TextView
+                        android:id="@+id/tv_zoho_status"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="No instalado"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
 
-    <Button
-        android:id="@+id/btn_reboot"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Reiniciar Dispositivo"
-        android:textSize="14sp"
-        android:layout_marginTop="4dp"
-        android:textColor="#EA4335"
-        style="?android:attr/borderlessButtonStyle" />
+                    <TextView
+                        android:id="@+id/tv_zoho_version_card"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="--"
+                        android:textSize="12sp"
+                        android:textColor="@color/text_secondary" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- ═══ CARD: SERVICIOS ═══ -->
+            <LinearLayout
+                style="@style/CardContainer"
+                android:orientation="vertical">
+
+                <TextView style="@style/SectionTitle"
+                    android:text="SERVICIOS DEL SISTEMA" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/divider"
+                    android:layout_marginBottom="8dp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingVertical="4dp">
+                    <ImageView android:layout_width="10dp" android:layout_height="10dp"
+                        android:id="@+id/iv_accessibility" android:src="@drawable/dot_red"
+                        android:layout_marginEnd="8dp" />
+                    <TextView android:id="@+id/tv_accessibility_status"
+                        style="@style/StatusRow" android:text="Accesibilidad: --" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingVertical="4dp">
+                    <ImageView android:layout_width="10dp" android:layout_height="10dp"
+                        android:id="@+id/iv_admin" android:src="@drawable/dot_red"
+                        android:layout_marginEnd="8dp" />
+                    <TextView android:id="@+id/tv_device_admin_status"
+                        style="@style/StatusRow" android:text="Device Admin: --" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingVertical="4dp">
+                    <ImageView android:layout_width="10dp" android:layout_height="10dp"
+                        android:id="@+id/iv_service" android:src="@drawable/dot_green"
+                        android:layout_marginEnd="8dp" />
+                    <TextView android:id="@+id/tv_service_status"
+                        style="@style/StatusRow" android:text="Servicio: Activo" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- ═══ CARD: INFO DISPOSITIVO ═══ -->
+            <LinearLayout
+                style="@style/CardContainer"
+                android:orientation="vertical">
+
+                <TextView style="@style/SectionTitle"
+                    android:text="INFORMACIÓN DEL DISPOSITIVO" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/divider"
+                    android:layout_marginBottom="8dp" />
+
+                <TextView android:id="@+id/tv_android_version"
+                    style="@style/StatusRow" android:text="Android: --" />
+                <TextView android:id="@+id/tv_battery"
+                    style="@style/StatusRow" android:text="Batería: --" />
+                <TextView android:id="@+id/tv_storage"
+                    style="@style/StatusRow" android:text="Almacenamiento: --" />
+            </LinearLayout>
+
+            <!-- ═══ BOTONES ACCIÓN ═══ -->
+            <Button
+                android:id="@+id/btn_install"
+                style="@style/ButtonPrimary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="⬇  INSTALAR ZOHO ASSIST" />
+
+            <Button
+                android:id="@+id/btn_check_updates"
+                style="@style/ButtonOutline"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="🔄  Verificar Actualizaciones" />
+
+            <Button
+                android:id="@+id/btn_dashboard"
+                style="@style/ButtonOutline"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="📊  Panel de Control Completo" />
+
+            <Button
+                android:id="@+id/btn_health_check"
+                style="@style/ButtonOutline"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="🔍  Diagnóstico Rápido" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/divider"
+                android:layout_marginVertical="12dp" />
+
+            <Button
+                android:id="@+id/btn_reboot"
+                style="@style/ButtonOutline"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="⏻  Reiniciar Dispositivo"
+                android:textColor="@color/error" />
+
+            <!-- Footer -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Zoho TPV Manager v1.0 · Uso interno"
+                android:textSize="11sp"
+                android:textColor="@color/text_hint"
+                android:gravity="center"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="24dp" />
+
+        </LinearLayout>
+    </ScrollView>
 
 </LinearLayout>

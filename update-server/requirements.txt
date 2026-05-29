@@ -1,0 +1,3 @@
+# Sin dependencias externas — solo stdlib de Python
+# Para producción con gunicorn, descomenta:
+# gunicorn==22.0.0

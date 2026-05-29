@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/background">
+
+    <!-- Header -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/gradient_header"
+        android:padding="24dp"
+        android:elevation="6dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="📊 Panel de Control"
+            android:textColor="@color/text_on_primary"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tv_dashboard_device"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="--"
+            android:textColor="#CCFFFFFF"
+            android:textSize="13sp"
+            android:layout_marginTop="4dp" />
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="16dp"
+        android:clipToPadding="false">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- ═══ MÉTRICAS RÁPIDAS ═══ -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="12dp">
+
+                <!-- Batería -->
+                <LinearLayout
+                    style="@style/CardContainer"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:layout_marginEnd="6dp">
+                    <TextView android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:text="🔋"
+                        android:textSize="28sp" />
+                    <TextView android:id="@+id/tv_metric_battery"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="--%" android:textSize="20sp" android:textStyle="bold"
+                        android:layout_marginTop="4dp" />
+                    <TextView android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:text="Batería"
+                        android:textSize="11sp" android:textColor="@color/text_secondary" />
+                </LinearLayout>
+
+                <!-- Almacenamiento -->
+                <LinearLayout
+                    style="@style/CardContainer"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:layout_marginStart="6dp">
+                    <TextView android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:text="💾"
+                        android:textSize="28sp" />
+                    <TextView android:id="@+id/tv_metric_storage"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="--" android:textSize="16sp" android:textStyle="bold"
+                        android:layout_marginTop="4dp" />
+                    <TextView android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:text="Libre"
+                        android:textSize="11sp" android:textColor="@color/text_secondary" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- RAM y CPU -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="12dp">
+
+                <LinearLayout
+                    style="@style/CardContainer"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:layout_marginEnd="6dp">
+                    <TextView android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:text="🧠"
+                        android:textSize="28sp" />
+                    <TextView android:id="@+id/tv_metric_ram"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="--" android:textSize="16sp" android:textStyle="bold"
+                        android:layout_marginTop="4dp" />
+                    <TextView android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:text="RAM libre"
+                        android:textSize="11sp" android:textColor="@color/text_secondary" />
+                </LinearLayout>
+
+                <LinearLayout
+                    style="@style/CardContainer"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:layout_marginStart="6dp">
+                    <TextView android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:text="⏱"
+                        android:textSize="28sp" />
+                    <TextView android:id="@+id/tv_metric_uptime"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="--" android:textSize="14sp" android:textStyle="bold"
+                        android:layout_marginTop="4dp" />
+                    <TextView android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:text="Uptime"
+                        android:textSize="11sp" android:textColor="@color/text_secondary" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- ═══ ESTADO DETALLADO ═══ -->
+            <LinearLayout
+                style="@style/CardContainer"
+                android:orientation="vertical">
+
+                <TextView style="@style/SectionTitle"
+                    android:text="ESTADO DEL SISTEMA" />
+
+                <View android:layout_width="match_parent" android:layout_height="1dp"
+                    android:background="@color/divider" android:layout_marginBottom="8dp" />
+
+                <TextView android:id="@+id/tv_detail_model"
+                    style="@style/StatusRow" android:text="Modelo: --" />
+                <TextView android:id="@+id/tv_detail_android"
+                    style="@style/StatusRow" android:text="Android: --" />
+                <TextView android:id="@+id/tv_detail_sdk"
+                    style="@style/StatusRow" android:text="SDK: --" />
+                <TextView android:id="@+id/tv_detail_zoho"
+                    style="@style/StatusRow" android:text="Zoho Assist: --" />
+                <TextView android:id="@+id/tv_detail_network"
+                    style="@style/StatusRow" android:text="Red: --" />
+            </LinearLayout>
+
+            <!-- ═══ ACCIONES ═══ -->
+            <Button
+                android:id="@+id/btn_back"
+                style="@style/ButtonOutline"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="←  Volver al Inicio" />
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

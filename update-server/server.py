@@ -1,0 +1,169 @@
+#!/usr/bin/env python3
+"""
+Zoho TPV Update Server — Servidor ligero de actualizaciones para APKs.
+Sirve manifest.json y APKs con verificación MD5.
+Ejecutar: python server.py
+"""
+import hashlib
+import json
+import os
+import time
+from datetime import datetime, timezone
+from http.server import HTTPServer, BaseHTTPRequestHandler
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent
+APK_DIR = ROOT / "apks"
+MANIFEST_FILE = ROOT / "manifest.json"
+HOST = os.environ.get("HOST", "0.0.0.0")
+PORT = int(os.environ.get("PORT", "8080"))
+
+
+def md5_file(path: Path) -> str:
+    h = hashlib.md5()
+    with open(path, "rb") as f:
+        for chunk in iter(lambda: f.read(8192), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def build_manifest() -> dict:
+    apks = sorted(APK_DIR.glob("*.apk"), reverse=True)
+    if not apks:
+        return {
+            "version": "0.0.0",
+            "version_code": 0,
+            "release_date": "",
+            "apk_url": "",
+            "md5": "",
+            "min_sdk": 24,
+            "changelog": "No APKs disponibles",
+            "error": "APK_DIR vacío"
+        }
+    latest = apks[0]
+    return {
+        "version": "1.0.0",
+        "version_code": 10000,
+        "release_date": datetime.fromtimestamp(
+            latest.stat().st_mtime, tz=timezone.utc
+        ).strftime("%Y-%m-%d"),
+        "apk_url": "/zoho/stable/zoho_assist.apk",
+        "md5": md5_file(latest),
+        "min_sdk": 24,
+        "changelog": "Versión inicial — despliegue TPV automatizado",
+        "file_size": latest.stat().st_size,
+    }
+
+
+class Handler(BaseHTTPRequestHandler):
+    def log_message(self, fmt, *args):
+        ts = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        print(f"[{ts}] {args[0]}")
+
+    def _json(self, data: dict, status: int = 200):
+        body = json.dumps(data, indent=2, ensure_ascii=False).encode()
+        self.send_response(status)
+        self.send_header("Content-Type", "application/json")
+        self.send_header("Content-Length", len(body))
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.end_headers()
+        self.wfile.write(body)
+
+    def _file(self, path: Path, content_type: str):
+        if not path.exists():
+            self.send_error(404)
+            return
+        data = path.read_bytes()
+        self.send_response(200)
+        self.send_header("Content-Type", content_type)
+        self.send_header("Content-Length", len(data))
+        self.end_headers()
+        self.wfile.write(data)
+
+    def do_GET(self):
+        path = self.path.rstrip("/")
+
+        if path == "/health":
+            self._json({"status": "ok", "uptime": time.time() - START_TIME})
+
+        elif path == "/zoho/stable/manifest.json":
+            self._json(build_manifest())
+
+        elif path == "/zoho/stable/zoho_assist.apk":
+            apks = sorted(APK_DIR.glob("*.apk"), reverse=True)
+            if not apks:
+                self.send_error(404, "No APK disponible")
+                return
+            self._file(apks[0], "application/vnd.android.package-archive")
+
+        elif path == "" or path == "/":
+            self._json({
+                "service": "Zoho TPV Update Server",
+                "endpoints": {
+                    "/health": "Health check",
+                    "/zoho/stable/manifest.json": "Metadata versión actual",
+                    "/zoho/stable/zoho_assist.apk": "Descarga APK",
+                    "/upload": "POST — subir nueva versión",
+                },
+            })
+
+        else:
+            self.send_error(404)
+
+    def do_POST(self):
+        if self.path.rstrip("/") != "/upload":
+            self.send_error(404)
+            return
+
+        content_type = self.headers.get("Content-Type", "")
+        if "multipart/form-data" not in content_type:
+            self._json({"error": "Usa multipart/form-data"}, 400)
+            return
+
+        content_length = int(self.headers.get("Content-Length", 0))
+        body = self.rfile.read(content_length)
+
+        boundary = content_type.split("boundary=")[1].encode() if "boundary=" in content_type else b""
+        if not boundary:
+            self._json({"error": "Falta boundary"}, 400)
+            return
+
+        parts = body.split(b"--" + boundary)
+        for part in parts:
+            if b"filename=" in part:
+                header_end = part.find(b"\r\n\r\n")
+                if header_end == -1:
+                    continue
+                content = part[header_end + 4:]
+                if content.endswith(b"\r\n"):
+                    content = content[:-2]
+
+                APK_DIR.mkdir(parents=True, exist_ok=True)
+                ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+                filename = f"zoho_assist_{ts}.apk"
+                filepath = APK_DIR / filename
+                filepath.write_bytes(content)
+
+                manifest = build_manifest()
+                MANIFEST_FILE.write_text(json.dumps(manifest, indent=2, ensure_ascii=False))
+
+                self._json({
+                    "ok": True,
+                    "file": filename,
+                    "md5": md5_file(filepath),
+                    "size": len(content),
+                    "manifest": manifest,
+                }, 201)
+                return
+
+        self._json({"error": "No se encontró archivo en la petición"}, 400)
+
+
+START_TIME = time.time()
+
+if __name__ == "__main__":
+    APK_DIR.mkdir(parents=True, exist_ok=True)
+    print(f"Zoho TPV Update Server — http://{HOST}:{PORT}")
+    print(f"  APK dir : {APK_DIR}")
+    print(f"  Manifest: {MANIFEST_FILE}")
+    HTTPServer((HOST, PORT), Handler).serve_forever()

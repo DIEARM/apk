@@ -1,0 +1,23 @@
+version: "3.9"
+
+services:
+  update-server:
+    build: .
+    container_name: zoho-update-server
+    ports:
+      - "${PORT:-8080}:8080"
+    volumes:
+      - apk_data:/app/apks
+      - ./manifest.json:/app/manifest.json
+    environment:
+      - HOST=0.0.0.0
+      - PORT=8080
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  apk_data:
