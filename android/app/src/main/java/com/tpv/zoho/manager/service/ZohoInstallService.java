@@ -26,9 +26,11 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
+import java.util.zip.ZipFile;
 
 public class ZohoInstallService extends IntentService {
     private static final String ACTION_INSTALL = "com.tpv.zoho.manager.INSTALL_ZOHO";
@@ -234,7 +236,8 @@ public class ZohoInstallService extends IntentService {
 
             byte[] buf = new byte[8192];
             for (File apk : apkFiles) {
-                try (OutputStream out = session.openWrite(apk.getName(), 0, apk.length());
+                String sessionName = getSessionApkName(apk);
+                try (OutputStream out = session.openWrite(sessionName, 0, apk.length());
                      FileInputStream in = new FileInputStream(apk)) {
                     int n;
                     while ((n = in.read(buf)) != -1) out.write(buf, 0, n);
@@ -263,22 +266,53 @@ public class ZohoInstallService extends IntentService {
         outDir.mkdirs();
 
         List<File> apks = new ArrayList<>();
-        byte[] buf = new byte[8192];
-        try (ZipInputStream zin = new ZipInputStream(new FileInputStream(xapkFile))) {
-            ZipEntry entry;
-            while ((entry = zin.getNextEntry()) != null) {
+        try (ZipFile zip = new ZipFile(xapkFile)) {
+            List<? extends ZipEntry> entries = Collections.list(zip.entries());
+            Collections.sort(entries, new Comparator<ZipEntry>() {
+                @Override
+                public int compare(ZipEntry a, ZipEntry b) {
+                    return getInstallOrder(a.getName()) - getInstallOrder(b.getName());
+                }
+            });
+
+            byte[] buf = new byte[8192];
+            for (ZipEntry entry : entries) {
                 String name = new File(entry.getName()).getName();
                 if (entry.isDirectory() || !name.endsWith(".apk")) continue;
 
                 File out = new File(outDir, name);
-                try (FileOutputStream fos = new FileOutputStream(out)) {
+                try (InputStream in = zip.getInputStream(entry);
+                     FileOutputStream fos = new FileOutputStream(out)) {
                     int n;
-                    while ((n = zin.read(buf)) != -1) fos.write(buf, 0, n);
+                    while ((n = in.read(buf)) != -1) fos.write(buf, 0, n);
                 }
                 apks.add(out);
             }
         }
         return apks;
+    }
+
+    private static int getInstallOrder(String name) {
+        if (name.endsWith("com.zoho.assist.agent.apk")) return 0;
+        if (name.contains("config.armeabi_v7a")) return 1;
+        if (name.contains("config.es")) return 2;
+        if (name.contains("config.en")) return 3;
+        if (name.contains("config.mdpi")) return 4;
+        return 10;
+    }
+
+    private String getSessionApkName(File apk) {
+        String name = apk.getName();
+        if ("com.zoho.assist.agent.apk".equals(name)) {
+            return "base.apk";
+        }
+        if (name.startsWith("config.") && name.endsWith(".apk")) {
+            return "split_" + name;
+        }
+        if (!name.endsWith(".apk")) {
+            return name + ".apk";
+        }
+        return name;
     }
 
     private void normalInstall(File apkFile) {
