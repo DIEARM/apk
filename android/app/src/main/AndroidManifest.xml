@@ -96,5 +96,9 @@
             </intent-filter>
         </receiver>
 
+        <receiver
+            android:name=".receiver.InstallResultReceiver"
+            android:exported="false" />
+
     </application>
 </manifest>

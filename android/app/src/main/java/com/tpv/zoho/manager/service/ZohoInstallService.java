@@ -14,7 +14,10 @@ import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.widget.Toast;
+
+import com.tpv.zoho.manager.receiver.InstallResultReceiver;
 
 import org.json.JSONObject;
 
@@ -33,6 +36,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 public class ZohoInstallService extends IntentService {
+    private static final String TAG = "ZohoInstallService";
     private static final String ACTION_INSTALL = "com.tpv.zoho.manager.INSTALL_ZOHO";
     private static final String EXTRA_APK_PATH = "apk_path";
     private static final String EXTRA_APK_URL = "apk_url";
@@ -57,6 +61,7 @@ public class ZohoInstallService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
+        Log.i(TAG, "Install service started");
         if (intent == null || !ACTION_INSTALL.equals(intent.getAction())) return;
 
         String packagePath = intent.getStringExtra(EXTRA_APK_PATH);
@@ -75,8 +80,10 @@ public class ZohoInstallService extends IntentService {
         }
 
         if (isXapk(packageFile)) {
+            Log.i(TAG, "Installing XAPK: " + packageFile.getAbsolutePath());
             installXapk(packageFile);
         } else if (isDeviceOwner()) {
+            Log.i(TAG, "Installing APK unattended: " + packageFile.getAbsolutePath());
             installPackageSet(singleton(packageFile), true);
         } else {
             toast("Modo manual. Configure Device Owner para instalacion desatendida.");
@@ -164,8 +171,10 @@ public class ZohoInstallService extends IntentService {
                 int n;
                 while ((n = in.read(buf)) != -1) fos.write(buf, 0, n);
             }
+            Log.i(TAG, "Downloaded package: " + out.getAbsolutePath() + " bytes=" + out.length());
             return out;
         } catch (Exception e) {
+            Log.e(TAG, "Download error", e);
             toast("Error descargando: " + e.getMessage());
             return null;
         } finally {
@@ -215,12 +224,14 @@ public class ZohoInstallService extends IntentService {
     private void installXapk(File xapkFile) {
         try {
             List<File> apks = extractXapk(xapkFile);
+            Log.i(TAG, "XAPK extracted APK count=" + apks.size());
             if (apks.isEmpty()) {
                 toast("XAPK sin APKs internos");
                 return;
             }
             installPackageSet(apks, isDeviceOwner());
         } catch (Exception e) {
+            Log.e(TAG, "XAPK install error", e);
             toast("Error instalando XAPK: " + e.getMessage());
         }
     }
@@ -233,10 +244,12 @@ public class ZohoInstallService extends IntentService {
 
             int sid = installer.createSession(params);
             PackageInstaller.Session session = installer.openSession(sid);
+            Log.i(TAG, "PackageInstaller session=" + sid + " files=" + apkFiles.size());
 
             byte[] buf = new byte[8192];
             for (File apk : apkFiles) {
                 String sessionName = getSessionApkName(apk);
+                Log.i(TAG, "Writing " + apk.getName() + " as " + sessionName + " bytes=" + apk.length());
                 try (OutputStream out = session.openWrite(sessionName, 0, apk.length());
                      FileInputStream in = new FileInputStream(apk)) {
                     int n;
@@ -245,16 +258,23 @@ public class ZohoInstallService extends IntentService {
                 }
             }
 
-            Intent confirm = new Intent("com.tpv.zoho.manager.INSTALL_DONE");
+            Intent confirm = new Intent(this, InstallResultReceiver.class);
+            confirm.setAction("com.tpv.zoho.manager.INSTALL_DONE");
+            int flags = PendingIntent.FLAG_UPDATE_CURRENT;
+            if (Build.VERSION.SDK_INT >= 31) {
+                flags |= PendingIntent.FLAG_MUTABLE;
+            }
             PendingIntent pi = PendingIntent.getBroadcast(this, sid, confirm,
-                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+                flags);
             session.commit(pi.getIntentSender());
             session.close();
+            Log.i(TAG, "PackageInstaller commit sent");
 
             toast(unattended
                 ? "Zoho Assist instalado en segundo plano"
                 : "Instalacion iniciada. Android puede pedir confirmacion.");
         } catch (Exception e) {
+            Log.e(TAG, "Package install error", e);
             toast("Fallo instalacion: " + e.getMessage());
             if (apkFiles.size() == 1) normalInstall(apkFiles.get(0));
         }
@@ -287,6 +307,7 @@ public class ZohoInstallService extends IntentService {
                     while ((n = in.read(buf)) != -1) fos.write(buf, 0, n);
                 }
                 apks.add(out);
+                Log.i(TAG, "Extracted " + out.getName() + " bytes=" + out.length());
             }
         }
         return apks;
